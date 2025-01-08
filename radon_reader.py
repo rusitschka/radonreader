@@ -94,7 +94,7 @@ def GetRadonValue():
         # Sample: D7-21-A0
         REkey = args.address[9:].replace(":","-")
 
-        clientMQTT = mqtt.Client("RadonEye_%s" % randint(1000,9999))
+        clientMQTT = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, "RadonEye_%s" % randint(1000,9999))
         clientMQTT.username_pw_set(args.mqtt_user,args.mqtt_pw)
         clientMQTT.connect(args.mqtt_srv, args.mqtt_port)
 
