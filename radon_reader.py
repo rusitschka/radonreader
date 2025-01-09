@@ -97,17 +97,20 @@ def GetRadonValue():
         clientMQTT = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "RadonEye_%s" % randint(1000,9999))
         clientMQTT.username_pw_set(args.mqtt_user,args.mqtt_pw)
         clientMQTT.connect(args.mqtt_srv, args.mqtt_port)
+        clientMQTT.loop_start()
 
         if args.mqtt_ha:
             ha_var = json.dumps({"radonvalue": "%0.2f" % (RadonValue)})
-            clientMQTT.publish("environment/RADONEYE/"+REkey,ha_var,qos=1)
+            msg_info = clientMQTT.publish("environment/RADONEYE/"+REkey,ha_var,qos=1)
         else:
-            clientMQTT.publish("emon/RADONEYE/"+REkey,RadonValue,qos=1)
+            msg_info = clientMQTT.publish("emon/RADONEYE/"+REkey,RadonValue,qos=1)
 
+        msg_info.wait_for_publish()
         if args.verbose and not args.silent:
             print ("OK")
-        sleep(1)
+
         clientMQTT.disconnect()
+        clientMQTT.loop_stop()
 
 try:
     GetRadonValue()
